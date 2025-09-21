@@ -1,10 +1,10 @@
-# Dirassa
+# Unify
 
-This is the backend for the Dirassa project.
+This is the backend for the Unify project.
 It provides all the REST API endpoints for managing Notes, Events, and comments.
 
 # Frontend Repository 
-[View Dirassa Online](https://github.com/Yusuf-qamber/dirassa-front-end-)
+[View Unify Online](https://github.com/Yusuf-qamber/dirassa-front-end-)
 
 
 
