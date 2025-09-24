@@ -1,4 +1,3 @@
-
 require("dotenv").config();
 const express = require("express");
 const mongoose = require("mongoose");
@@ -16,6 +15,7 @@ const authRouter = require("./controllers/auth");
 const userRouter = require("./controllers/users");
 const notesRouter = require('./controllers/notes.js')
 const eventsRouter = require('./controllers/events.js')
+const scheduleRouter = require("./controllers/schedule");
 const verifyToken = require("./middleware/verify-token");
 
 // connect DB
@@ -41,9 +41,11 @@ app.use("/test-jwt", testJwtRouter);
 app.use('/:college/notes',notesRouter)
 app.use('/:college/events',eventsRouter)
 
+
 // protected
 app.use(verifyToken);
 app.use("/users", userRouter);
+app.use("/schedule", scheduleRouter);
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`API on :${PORT}`));
