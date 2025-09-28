@@ -16,6 +16,7 @@ const userRouter = require("./controllers/users");
 const notesRouter = require('./controllers/notes.js')
 const eventsRouter = require('./controllers/events.js')
 const scheduleRouter = require("./controllers/schedule");
+const assignmentsRouter = require("./controllers/assignments.js");
 const verifyToken = require("./middleware/verify-token");
 
 // connect DB
@@ -46,6 +47,7 @@ app.use('/:college/events',eventsRouter)
 app.use(verifyToken);
 app.use("/users", userRouter);
 app.use("/schedule", scheduleRouter);
+app.use("/assignments", assignmentsRouter);
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`API on :${PORT}`));
