@@ -3,6 +3,8 @@ const verifyToken = require("../middleware/verify-token.js");
 const Event = require("../models/event.js");
 const router = express.Router({ mergeParams: true });
 const existingCollege = Event.schema.path('college').enumValues;
+const User = require("../models/user");
+
 
 
 // -------------------Puplic routes------------------
@@ -42,14 +44,21 @@ router.use(verifyToken)
 
 router.post("/", async (req, res) => {
   try {
-    req.body.owner = req.user._id
-    req.body.college = req.params.college   
-    const event = await Event.create(req.body)
-    res.status(200).json(event)
+    req.body.owner = req.user._id;
+    req.body.college = req.params.college; 
+
+    const event = await Event.create(req.body);
+
+    await User.findByIdAndUpdate(req.user._id, { $push: { myEvents: event._id } });
+
+    res.status(200).json(event);
   } catch (err) {
-    res.status(500).json({ error: err.message })
+    console.error(err);  
+    res.status(500).json({ error: err.message });
   }
-})
+});
+
+
 
 
 

@@ -7,6 +7,7 @@ const app = express();
  const { OAuth2Client } = require('google-auth-library');
  const cookieParser = require('cookie-parser');
  const client = new OAuth2Client();
+ const path=require("path")
 
 
 // controllers
@@ -18,6 +19,7 @@ const eventsRouter = require('./controllers/events.js')
 const scheduleRouter = require("./controllers/schedule");
 const assignmentsRouter = require("./controllers/assignments.js");
 const gpaRouter = require("./controllers/gpa.js");
+const profileRouter = require("./controllers/profile");
 const verifyToken = require("./middleware/verify-token");
 
 // connect DB
@@ -35,6 +37,8 @@ app.use(cors());
 app.use(cookieParser());
 app.use(express.json());
 app.use(logger("dev"));
+// Serve static files (images, etc.)
+app.use("/assets", express.static(path.join(__dirname, "assets")));
 
 
 // public routes
@@ -50,6 +54,7 @@ app.use("/users", userRouter);
 app.use("/schedule", scheduleRouter);
 app.use("/assignments", assignmentsRouter);
 app.use("/gpa", gpaRouter);
+app.use("/profile", profileRouter);
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`API on :${PORT}`));

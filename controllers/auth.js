@@ -20,7 +20,7 @@ const signToken = (user) =>
 
 router.post("/sign-up", async (req, res) => {
   try {
-    const { username, password, email } = req.body;
+    const { username, password, email,picture } = req.body;
 
     const passwordRegex =
       /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{12,}$/;
