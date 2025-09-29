@@ -4,6 +4,8 @@ const Note = require("../models/note.js");
 
 const router = express.Router({ mergeParams: true });
 const existingCollege = Note.schema.path('college').enumValues;
+const User = require("../models/user");
+
 
 
 // -------------------Puplic routes------------------
@@ -43,14 +45,20 @@ router.use(verifyToken)
 
 router.post("/", async (req, res) => {
   try {
-    req.body.owner = req.user._id
-    req.body.college = req.params.college   
-    const note = await Note.create(req.body)
-    res.status(200).json(note)
+    req.body.owner = req.user._id;
+    req.body.college = req.params.college;
+
+    const note = await Note.create(req.body);
+
+  
+    await User.findByIdAndUpdate(req.user._id, { $push: { myNotes: note._id } });
+
+    res.status(200).json(note);
   } catch (err) {
-    res.status(500).json({ error: err.message })
+    res.status(500).json({ error: err.message });
   }
-})
+});
+
 
 
 
