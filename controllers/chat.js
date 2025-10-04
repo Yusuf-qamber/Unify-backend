@@ -104,4 +104,23 @@ router.get("/search/:query", verifyToken, async (req, res) => {
   }
 });
 
+// DELETE /chat/conversation/:userId
+router.delete("/conversation/:userId", verifyToken, async (req, res) => {
+  try {
+    const userId = req.user._id;
+    const otherUserId = req.params.userId;
+
+    await Message.deleteMany({
+      $or: [
+        { sender: userId, receiver: otherUserId },
+        { sender: otherUserId, receiver: userId },
+      ],
+    });
+
+    res.json({ success: true, message: "Conversation deleted" });
+  } catch (err) {
+    res.status(500).json({ err: err.message });
+  }
+});
+
 module.exports = router;

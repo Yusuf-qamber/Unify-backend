@@ -133,6 +133,13 @@ socket.on("sendPrivateMessage", async ({ sender, receiver, content }) => {
   }
 });
 
+socket.on("deleteConversation", ({ userId, otherUserId }) => {
+  const socketId = onlineUsers[otherUserId];
+  if (socketId) {
+    io.to(socketId).emit("conversationDeleted", { userId });
+  }
+});
+
 
   // ========= Disconnect =========
   socket.on("disconnect", () => {
