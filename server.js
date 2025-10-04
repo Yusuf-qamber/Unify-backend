@@ -64,35 +64,80 @@ const io = new Server(server, {
   },
 });
 
-// college rooms + messages
+// Track online users: { userId: socketId }
+let onlineUsers = {};
+
 io.on("connection", (socket) => {
   console.log("🔌 Socket connected:", socket.id);
 
-  // join college room
+  // ========= College Rooms =========
   socket.on("joinCollege", (college) => {
     socket.join(college);
     console.log(`✅ User joined college room: ${college}`);
   });
 
-  // send message in college room
   socket.on("sendCollegeMessage", async ({ sender, college, content }) => {
-  try {
-    const Message = require("./models/message");
-    
-    // save message
-    const msg = await Message.create({ sender, college, content });
+    try {
+      const Message = require("./models/message");
 
-    // 🔹 populate sender info before emitting
-    const populatedMsg = await msg.populate("sender", "username picture");
+      // save message
+      const msg = await Message.create({ sender, college, content });
 
-    io.to(college).emit("receiveCollegeMessage", populatedMsg);
-  } catch (err) {
-    console.error(err);
+      // populate sender before emitting
+      const populatedMsg = await msg.populate("sender", "username picture");
+
+      io.to(college).emit("receiveCollegeMessage", populatedMsg);
+    } catch (err) {
+      console.error(err);
+    }
+  });
+
+  // ========= Private Chat =========
+socket.on("userOnline", (userId) => {
+  onlineUsers[userId] = socket.id;
+  io.emit("updateUserStatus", onlineUsers);
+  console.log(`✅ User ${userId} is online`);
+});
+
+// New: handle explicit offline
+socket.on("userOffline", (userId) => {
+  if (onlineUsers[userId] === socket.id) {
+    delete onlineUsers[userId];
+    io.emit("updateUserStatus", onlineUsers);
+    console.log(`❌ User ${userId} went offline (manual signout)`);
   }
 });
 
-  // disconnect
+  socket.on("sendPrivateMessage", async ({ sender, receiver, content }) => {
+    try {
+      const Message = require("./models/message");
+
+      // save private message
+      const msg = await Message.create({ sender, receiver, content });
+      const populatedMsg = await msg.populate("sender", "username picture");
+
+      // send to receiver if online
+      if (onlineUsers[receiver]) {
+        io.to(onlineUsers[receiver]).emit("receivePrivateMessage", populatedMsg);
+      }
+
+      // send back to sender
+      io.to(socket.id).emit("receivePrivateMessage", populatedMsg);
+    } catch (err) {
+      console.error(err);
+    }
+  });
+
+  // ========= Disconnect =========
   socket.on("disconnect", () => {
+    for (let userId in onlineUsers) {
+      if (onlineUsers[userId] === socket.id) {
+        delete onlineUsers[userId];
+        io.emit("updateUserStatus", onlineUsers);
+        console.log(`❌ User ${userId} went offline`);
+        break;
+      }
+    }
     console.log("❌ Socket disconnected:", socket.id);
   });
 });
