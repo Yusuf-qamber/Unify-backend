@@ -27,6 +27,18 @@ router.get("/me", async (req, res) => {
   }
 });
 
+router.get("/:userId", async (req, res) => {
+  try{
+    const { userId } = req.params;
+    const user = await User.findById(userId).populate("myNotes").populate("myEvents");
+    if (!user) return res.status(404).json({ error: "User not found" });
+    res.json(user);   
+  } catch(err){
+    res.status(500).json({err:err.message})
+  }
+
+});
+
 
 // EDIT PROFILE (USERNAME OR PICTURE)
 router.put("/me", upload.single("picture"), async (req, res) => {

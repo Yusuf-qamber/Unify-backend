@@ -108,25 +108,31 @@ socket.on("userOffline", (userId) => {
   }
 });
 
-  socket.on("sendPrivateMessage", async ({ sender, receiver, content }) => {
-    try {
-      const Message = require("./models/message");
+socket.on("sendPrivateMessage", async ({ sender, receiver, content }) => {
+  try {
+    const Message = require("./models/message");
 
-      // save private message
-      const msg = await Message.create({ sender, receiver, content });
-      const populatedMsg = await msg.populate("sender", "username picture");
+    // save private message
+    const msg = await Message.create({ sender, receiver, content });
 
-      // send to receiver if online
-      if (onlineUsers[receiver]) {
-        io.to(onlineUsers[receiver]).emit("receivePrivateMessage", populatedMsg);
-      }
+    // ✅ populate both sender and receiver
+    const populatedMsg = await msg.populate([
+      { path: "sender", select: "username picture" },
+      { path: "receiver", select: "username picture" },
+    ]);
 
-      // send back to sender
-      io.to(socket.id).emit("receivePrivateMessage", populatedMsg);
-    } catch (err) {
-      console.error(err);
+    // send to receiver if online
+    if (onlineUsers[receiver]) {
+      io.to(onlineUsers[receiver]).emit("receivePrivateMessage", populatedMsg);
     }
-  });
+
+    // send back to sender (to update UI)
+    io.to(socket.id).emit("receivePrivateMessage", populatedMsg);
+  } catch (err) {
+    console.error(err);
+  }
+});
+
 
   // ========= Disconnect =========
   socket.on("disconnect", () => {
