@@ -7,7 +7,8 @@ const courseSchema = new mongoose.Schema({
     type: String,
     enum: ['A','A-','B+','B','B-','C+','C','C-','D+','D','D-','F'],
     required: true
-  }
+  },
+  major: { type: Boolean, default: false } 
 });
 
 const gpaSchema = new mongoose.Schema({
@@ -18,7 +19,8 @@ const gpaSchema = new mongoose.Schema({
   },
   semester: { type: String, required: true }, 
   courses: [courseSchema],
-  semesterGpa: { type: Number } 
+  semesterGpa: { type: Number },
+  majorGpa: { type: Number } 
 }, { timestamps: true });
 
 const Gpa = mongoose.model('Gpa', gpaSchema);
