@@ -58,11 +58,12 @@ const server = http.createServer(app);
 
 const io = new Server(server, {
   cors: {
-    origin: process.env.CLIENT_ORIGINS || "*",
+    origin: process.env.CLIENT_ORIGINS || "https://unify-frontend-pi.vercel.app",
     methods: ["GET", "POST"],
     credentials: true,
   },
 });
+
 
 // Track online users: { userId: socketId }
 let onlineUsers = {};
