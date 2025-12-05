@@ -7,10 +7,11 @@ const verifyToken = require("../middleware/verify-token");
 router.get("/college/:college", verifyToken, async (req, res) => {
   try {
     const messages = await Message.find({ college: req.params.college })
-      .populate("sender", "username picture") // include username and picture
+      .populate("sender", "username picture") 
       .sort({ createdAt: 1 });
     res.json(messages);
   } catch (err) {
+    
     res.status(500).json({ err: err.message });
   }
 });
@@ -21,24 +22,28 @@ router.get("/conversations", verifyToken, async (req, res) => {
   try {
     const userId = req.user._id;
 
-    // Find all distinct users this person has chatted with
+    
     const messages = await Message.find({
       $or: [{ sender: userId }, { receiver: userId }],
+      receiver: { $ne: null }, 
     })
       .populate("sender", "username picture")
       .populate("receiver", "username picture")
       .sort({ createdAt: -1 });
 
-    
     const conversations = {};
+
     messages.forEach((msg) => {
+      
+      if (!msg.sender || !msg.receiver) return;
+
+      
       const otherUser =
         msg.sender._id.toString() === userId.toString()
           ? msg.receiver
           : msg.sender;
 
-      if (!otherUser) return; // skip if it's a college message
-
+      
       if (!conversations[otherUser._id]) {
         conversations[otherUser._id] = {
           user: otherUser,
@@ -50,9 +55,11 @@ router.get("/conversations", verifyToken, async (req, res) => {
 
     res.json(Object.values(conversations));
   } catch (err) {
+    
     res.status(500).json({ err: err.message });
   }
 });
+
 
 // GET /chat/private/:userId
 router.get("/private/:userId", verifyToken, async (req, res) => {
