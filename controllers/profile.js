@@ -4,9 +4,9 @@ const User = require("../models/user");
 const verifyToken = require("../middleware/verify-token");
 const upload = require("../config/multer");
 
-router.use(verifyToken); // protect all routes
+router.use(verifyToken); 
 
-// GET profile
+// GET current user profile
 router.get("/me", async (req, res) => {
   try {
     const profile = await User.findById(req.user._id)
@@ -27,6 +27,7 @@ router.get("/me", async (req, res) => {
   }
 });
 
+// GET user profile 
 router.get("/:userId", async (req, res) => {
   try{
     const { userId } = req.params;
@@ -40,7 +41,7 @@ router.get("/:userId", async (req, res) => {
 });
 
 
-// EDIT PROFILE (USERNAME OR PICTURE)
+// UPDATE PROFILE (PICTURE)
 router.put("/me", upload.single("picture"), async (req, res) => {
   try {
     let { username } = req.body;

@@ -2,11 +2,7 @@ const express = require("express");
 const Schedule = require("../models/schedule");
 const router = express.Router();
 
-/**
- * Check if a new course conflicts with an existing one
- * - Same day
- * - Overlapping times
- */
+
 function hasConflict(existing, newOne) {
   for (let day of newOne.days) {
     if (!existing.days.includes(day)) continue;
@@ -16,14 +12,12 @@ function hasConflict(existing, newOne) {
   return false;
 }
 
-/**
- * Safely get the current user's ID from the request
- */
+
 function getOwnerId(req) {
   return req.user?._id || null;
 }
 
-// ---------------- CREATE COURSE ----------------
+// Create a course
 router.post("/", async (req, res) => {
   try {
     const owner = getOwnerId(req);
@@ -36,7 +30,6 @@ router.post("/", async (req, res) => {
 
   const newCourse = { ...req.body };
 
-    // Conflict check
     for (let course of schedule.courses) {
       if (hasConflict(course, newCourse)) {
         return res.status(400).json({ error: "Time conflict" });
@@ -52,7 +45,7 @@ router.post("/", async (req, res) => {
   }
 });
 
-// ---------------- GET SCHEDULE ----------------
+// Get schedule 
 router.get("/", async (req, res) => {
   try {
     const owner = getOwnerId(req);
@@ -63,7 +56,7 @@ router.get("/", async (req, res) => {
   }
 });
 
-// ---------------- UPDATE COURSE ----------------
+// update course
 router.put("/:courseId", async (req, res) => {
   try {
     const owner = getOwnerId(req);
@@ -82,7 +75,7 @@ router.put("/:courseId", async (req, res) => {
   }
 });
 
-// ---------------- DELETE COURSE ----------------
+// delete a course
 router.delete("/:courseId", async (req, res) => {
   try {
     const owner = getOwnerId(req);

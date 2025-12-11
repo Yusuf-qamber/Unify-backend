@@ -1,9 +1,7 @@
-// middleware/verify-token.js
 const jwt = require('jsonwebtoken');
 
 const verifyToken = (req, res, next) => {
   try {
-    // read from header or cookie
     let token = null;
     const authHeader = req.headers.authorization || "";
     if (authHeader.startsWith("Bearer ")) token = authHeader.split(" ")[1];

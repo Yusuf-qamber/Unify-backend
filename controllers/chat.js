@@ -3,7 +3,7 @@ const router = express.Router();
 const Message = require("../models/message");
 const verifyToken = require("../middleware/verify-token");
 
-// get college chat history (protected)
+// get college chat history
 router.get("/college/:college", verifyToken, async (req, res) => {
   try {
     const messages = await Message.find({ college: req.params.college })
@@ -16,8 +16,9 @@ router.get("/college/:college", verifyToken, async (req, res) => {
   }
 });
 
+// ---------------------------------------Private chat---------------------------------------------
 
-// GET /chat/conversations
+// get the lists of chats
 router.get("/conversations", verifyToken, async (req, res) => {
   try {
     const userId = req.user._id;
@@ -61,7 +62,7 @@ router.get("/conversations", verifyToken, async (req, res) => {
 });
 
 
-// GET /chat/private/:userId
+//  get chat history between two users
 router.get("/private/:userId", verifyToken, async (req, res) => {
   try {
     const userId = req.user._id;
@@ -83,7 +84,7 @@ router.get("/private/:userId", verifyToken, async (req, res) => {
   }
 });
 
-// POST /chat/private/:userId
+// sned a new message to another user
 router.post("/private/:userId", verifyToken, async (req, res) => {
   try {
     const sender = req.user._id;
@@ -99,7 +100,7 @@ router.post("/private/:userId", verifyToken, async (req, res) => {
   }
 });
 
-// // search users by username
+// search users by username
 router.get("/search/:query", verifyToken, async (req, res) => {
   try {
     const regex = new RegExp(req.params.query, "i"); 
@@ -111,7 +112,7 @@ router.get("/search/:query", verifyToken, async (req, res) => {
   }
 });
 
-// DELETE /chat/conversation/:userId
+// delete conversation between two users
 router.delete("/conversation/:userId", verifyToken, async (req, res) => {
   try {
     const userId = req.user._id;
