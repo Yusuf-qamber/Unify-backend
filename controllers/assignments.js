@@ -11,7 +11,7 @@ router.use(verifyToken);
 router.get("/", async (req, res) => {
   try {
     const assignments = await Assignment.find({ user: req.user._id })
-      .populate("user", "name email"); // optional: limit fields
+      .populate("user", "name email"); 
     res.status(200).json(assignments);
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -26,7 +26,7 @@ router.get("/:assignmentId", async (req, res) => {
     if (!assignment)
       return res.status(404).json({ error: "Assignment not found" });
 
-    // Ensure the assignment belongs to the user
+   
     if (!assignment.user._id.equals(req.user._id))
       return res.status(403).json({ error: "Not authorized" });
 

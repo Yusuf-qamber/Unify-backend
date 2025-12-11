@@ -5,7 +5,7 @@ const courseSchema = new mongoose.Schema({
   section: { type: String, required: true },
   days: [{ 
     type: String, 
-    enum: ["U", "M", "T", "W", "H"], // Sunday–Thursday
+    enum: ["U", "M", "T", "W", "H"], 
     required: true 
   }],
   startTime: { type: String, required: true },
