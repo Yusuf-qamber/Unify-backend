@@ -44,10 +44,10 @@ router.get("/:userId", async (req, res) => {
 // UPDATE PROFILE (PICTURE)
 router.put("/me", upload.single("picture"), async (req, res) => {
   try {
-    let { username } = req.body;
+    // let { username } = req.body;
     const updates = {};
 
-    if (username) updates.username = username;
+    // if (username) updates.username = username;
 
     if (req.file) {
   
